@@ -53,10 +53,10 @@ function draw() {
     var xoff = 0;
     for (var x = 0; x < cols; x++) {
       var index = x + y * cols;
-      flowfield[index] = v;
       var angle = fxrand() * xoff;
       var v = p5.Vector.fromAngle(angle);
       v.setMag(magv);
+      flowfield[index] = v;
       xoff += inc;
       stroke(0, 130);
       // push();
@@ -98,15 +98,41 @@ function draw() {
   //console.log(indexk);
 }
 function windowResized() {
-  loop();
-  indexk = 0;
   resizeCanvas(windowWidth, windowHeight);
+  restartSketch();
+}
 
+function fxrandRange(min, max, step) {
+  value = Math.round((fxrand() * (max - min)) / step);
+  return value * step + min;
+}
+
+window.$fxhashFeatures = {
+  Illumination: cg,
+  Magnificence: magv,
+  Wisdom: inc,
+  Truth: scl,
+};
+
+function restartSketch() {
+  indexk = 0;
   cols = floor(windowWidth / scl);
   rows = floor(windowHeight / scl);
-  //fr = createP("");
   flowfield = new Array(cols * rows);
-
+  var yoff = 0;
+  for (var y = 0; y < rows; y++) {
+    var xoff = 0;
+    for (var x = 0; x < cols; x++) {
+      var index = x + y * cols;
+      var angle = fxrand() * xoff;
+      var v = p5.Vector.fromAngle(angle);
+      v.setMag(magv);
+      flowfield[index] = v;
+      xoff += inc;
+    }
+    yoff += inc;
+    zoff += 0.0008;
+  }
   for (i = 0; i < 1000; i++) {
     particles[i] = new Particle(255, 255, 255, fxrand() * i, fxrand() * i);
   }
@@ -124,36 +150,11 @@ function windowResized() {
   push();
   noStroke();
   background(0);
-  rectMode(RADIUS);
-  fill(0);
-  //fill(alpha(50));
-  rect(
-    windowWidth / 2,
-    windowHeight / 2,
-    windowWidth / 2 - 30,
-    windowHeight / 2 - 30
-  );
-
-  rectMode(RADIUS);
-  fill(0, 1 * sin(millis() * 1000));
-  noStroke();
-  rect(
-    windowWidth / 2,
-    windowHeight / 2,
-    windowWidth / 2 - 30,
-    windowHeight / 2 - 30
-  );
   pop();
+  redraw();
+  loop();
 }
 
-function fxrandRange(min, max, step) {
-  value = Math.round((fxrand() * (max - min)) / step);
-  return value * step + min;
+function mousePressed() {
+  restartSketch();
 }
-
-window.$fxhashFeatures = {
-  Illumination: cg,
-  Magnificence: magv,
-  Wisdom: inc,
-  Truth: scl,
-};
